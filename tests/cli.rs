@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-const BIN: &str = env!("CARGO_BIN_EXE_claude-token-usage");
+const BIN: &str = env!("CARGO_BIN_EXE_c-usage");
 
 /// Inverse of days_from_civil (Howard Hinnant), for writing UTC timestamps.
 fn civil_from_days(z: i64) -> (i64, i64, i64) {
@@ -60,7 +60,7 @@ impl Drop for Fixture {
 
 fn fixture(name: &str) -> Fixture {
     let root = std::env::temp_dir().join(format!(
-        "ctu-test-{name}-{}-{}",
+        "cusage-test-{name}-{}-{}",
         std::process::id(),
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -88,7 +88,7 @@ fn run(fx: &Fixture, claude: &Path) -> (String, i32) {
     let out = Command::new(BIN)
         .current_dir(fx.root.join("proj"))
         .env("CLAUDE_PROJECTS_DIR", fx.root.join("projects"))
-        .env("CLAUDE_TOKEN_USAGE_CLAUDE_BIN", claude)
+        .env("CUSAGE_CLAUDE_BIN", claude)
         .env("PWD", fx.root.join("proj"))
         .env("NO_COLOR", "1")
         .output()

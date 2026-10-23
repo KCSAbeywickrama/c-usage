@@ -153,7 +153,7 @@ pub struct View<'a> {
 
 pub fn render(v: &View, c: &Colors) -> String {
     let mut out = String::new();
-    out.push_str(&format!("{}  {}\n", c.bold("claude-token-usage"), v.label));
+    out.push_str(&format!("{}  {}\n", c.bold("c-usage"), v.label));
 
     match v.limits {
         Ok(limits) => {

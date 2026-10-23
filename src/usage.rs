@@ -28,7 +28,7 @@ pub struct WeekLimit {
 
 /// Which `claude` to run. Overridable so tests can stand in a fake.
 fn claude_bin() -> String {
-    std::env::var("CLAUDE_TOKEN_USAGE_CLAUDE_BIN")
+    std::env::var("CUSAGE_CLAUDE_BIN")
         .ok()
         .filter(|s| !s.is_empty())
         .unwrap_or_else(|| "claude".to_string())

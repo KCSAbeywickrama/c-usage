@@ -1,4 +1,4 @@
-//! claude-token-usage - how much of your weekly Claude limit the project you
+//! c-usage - how much of your weekly Claude limit the project you
 //! are standing in has used.
 //!
 //! Anthropic reports the weekly limit for the whole account only. This reads
@@ -18,10 +18,10 @@ use std::io::Write;
 use std::time::Duration;
 
 const HELP: &str = "\
-claude-token-usage - this project's share of your weekly Claude limit
+c-usage - this project's share of your weekly Claude limit
 
-usage: claude-token-usage [--no-color | --color]
-       ctu [--no-color | --color]
+usage: c-usage [--no-color | --color]
+       cusage [--no-color | --color]
 
 Run it inside a project folder. It reads the weekly limit from
 `claude -p --no-session-persistence /usage` (no model call, no usage spent)
@@ -38,8 +38,8 @@ options:
   -V, --version
 
 environment:
-  CLAUDE_PROJECTS_DIR             transcripts root (default ~/.claude/projects)
-  CLAUDE_TOKEN_USAGE_CLAUDE_BIN   the claude executable to run (default claude)
+  CLAUDE_PROJECTS_DIR   transcripts root (default ~/.claude/projects)
+  CUSAGE_CLAUDE_BIN     the claude executable to run (default claude)
   NO_COLOR, FORCE_COLOR
 ";
 
@@ -47,7 +47,7 @@ environment:
 const USAGE_TIMEOUT: Duration = Duration::from_secs(30);
 
 fn fail(msg: &str) -> ! {
-    eprintln!("claude-token-usage: {msg}");
+    eprintln!("c-usage: {msg}");
     std::process::exit(2);
 }
 
@@ -75,10 +75,7 @@ fn main() {
                 return;
             }
             "-V" | "--version" => {
-                emit(&format!(
-                    "claude-token-usage {}\n",
-                    env!("CARGO_PKG_VERSION")
-                ));
+                emit(&format!("c-usage {}\n", env!("CARGO_PKG_VERSION")));
                 return;
             }
             other => fail(&format!("unknown argument: {other}\n       try --help")),

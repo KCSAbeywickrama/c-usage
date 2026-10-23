@@ -1,27 +1,60 @@
-#!/bin/sh
-# Symlink ~/.local/bin/{claude-token-usage,ctu} at target/release/claude-token-usage,
-# so a `cargo build --release` is picked up immediately.
+#!/usr/bin/env sh
+# Install c-usage for working on it: build the release binary and symlink it
+# onto your PATH.
 #
-# Note: `cargo clean` deletes the target, which leaves both links dangling.
-# Re-run this script after cleaning.
+# The install is a symlink into target/release, so a later `cargo build --release`
+# updates the installed command in place. (`cargo clean` removes what the link points
+# at, so rebuild or re-run this script after one.)
+#
+# For a normal install use ./install.sh instead: it downloads a checksum-verified
+# prebuilt binary and copies it, so it survives `cargo clean`.
+#
+# Usage:
+#   ./install-dev.sh                 # build, then install to ~/.local/bin (default)
+#   BINDIR=/usr/local/bin ./install-dev.sh
 set -eu
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd -P)
 BINDIR="${BINDIR:-$HOME/.local/bin}"
-HERE="$(cd "$(dirname "$0")" && pwd)"
-BIN="$HERE/target/release/claude-token-usage"
+BUILT="$SCRIPT_DIR/target/release/c-usage"
 
-command -v cargo >/dev/null 2>&1 || { echo "install-dev: cargo not found" >&2; exit 1; }
-[ -x "$BIN" ] || { echo "building release first ..."; ( cd "$HERE" && cargo build --release ); }
+if ! command -v cargo >/dev/null 2>&1; then
+  echo "install: cargo not found on PATH." >&2
+  echo "  Install a Rust toolchain (https://rustup.rs), or if you just installed one," >&2
+  echo "  start a new shell or run: . \"\$HOME/.cargo/env\"" >&2
+  exit 1
+fi
+
+echo "Building release binary..."
+( cd "$SCRIPT_DIR" && cargo build --release )
+
+if [ ! -x "$BUILT" ]; then
+  echo "install: build succeeded but $BUILT is missing" >&2
+  exit 1
+fi
 
 mkdir -p "$BINDIR"
-ln -sf "$BIN" "$BINDIR/claude-token-usage"
-ln -sf "$BIN" "$BINDIR/ctu"
 
-echo "linked (dev):"
-echo "  $BINDIR/claude-token-usage -> $BIN"
-echo "  $BINDIR/ctu                -> $BIN"
+# Install under both names: `c-usage` and the short alias `cusage`.
+for name in c-usage cusage; do
+  target="$BINDIR/$name"
+  if [ -e "$target" ] || [ -L "$target" ]; then
+    rm -f "$target"
+  fi
+  ln -s "$BUILT" "$target"
+  echo "Installed: $target -> $BUILT"
+done
 
+# Warn if BINDIR is not on PATH.
 case ":$PATH:" in
   *":$BINDIR:"*) ;;
-  *) echo ""; echo "note: $BINDIR is not on your PATH. Add it:"; echo "  export PATH=\"$BINDIR:\$PATH\"" ;;
+  *)
+    echo
+    echo "NOTE: $BINDIR is not on your PATH."
+    echo "Add this to your shell profile (e.g. ~/.zshrc):"
+    echo "  export PATH=\"$BINDIR:\$PATH\""
+    ;;
 esac
+
+echo
+echo "Try it in a project folder: c-usage  or  cusage    (or inside Claude Code: !cusage)"

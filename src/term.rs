@@ -18,7 +18,7 @@ fn env_truthy(key: &str) -> bool {
 
 impl Colors {
     /// Precedence: explicit flag, NO_COLOR, FORCE_COLOR, CLAUDECODE (so
-    /// `!claude-token-usage` inside Claude Code stays coloured), then whether
+    /// `!cusage` inside Claude Code stays coloured), then whether
     /// stdout is a terminal.
     pub fn new(pref: Option<bool>) -> Self {
         let on = match pref {
