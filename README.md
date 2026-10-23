@@ -1,6 +1,6 @@
 # c-usage
 
-How much of your weekly Claude limit the project you're in has used. A command-line tool for [Claude Code](https://claude.com/claude-code).
+How much of your weekly Claude limit the project you're in has used, from your local Claude Code sessions.
 
 > Not affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic.
 
