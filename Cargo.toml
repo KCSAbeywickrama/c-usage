@@ -1,0 +1,32 @@
+[package]
+name = "claude-token-usage"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+description = "How much of your weekly Claude limit the current project used, from local Claude Code transcripts plus /usage."
+keywords = ["claude-code", "transcripts", "usage", "cli"]
+
+[[bin]]
+name = "claude-token-usage"
+path = "src/main.rs"
+
+[dependencies]
+# Narrow-struct parsing of transcript records: only the usage fields are typed,
+# and message content is skipped by the lexer instead of materialised.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# SIMD substring search for the raw-line gate.
+memchr = "2"
+# Map transcripts instead of copying them through read().
+memmap2 = "0.9"
+# localtime_r/mktime/tzset for local-time rendering and for reading /usage's
+# reset time in its named zone. No chrono.
+libc = "0.2"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = true
